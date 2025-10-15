@@ -1,6 +1,7 @@
 import json
 import os
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+from more_itertools import chunked
 
 
 def render_website():
@@ -22,7 +23,10 @@ def render_website():
 
     books_sorted = sorted(books, key=lambda x: x["title"])
 
-    rendered_page = template.render(books=books_sorted)
+    # Разбиваем книги на группы по 2 книги в каждой
+    books_chunks = list(chunked(books_sorted, 2))
+
+    rendered_page = template.render(books_chunks=books_chunks)
 
     with open("index.html", "w", encoding="utf8") as file:
         file.write(rendered_page)
