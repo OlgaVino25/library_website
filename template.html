@@ -50,9 +50,9 @@
     <div class="row">
       {% for book_pair in books_chunks %}
       {% for book in book_pair %}
-      <div class="col-lg-6">
-        <div class="card mb-3">
-          <div class="row no-gutters">
+      <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+          <div class="row no-gutters h-100">
             <div class="col-md-4">
               <img src="{{ book.img_src }}" class="card-img" alt="{{ book.title }}">
             </div>
