@@ -1,5 +1,6 @@
 import json
 import os
+import math
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from more_itertools import chunked
 
@@ -19,11 +20,15 @@ def render_website():
 
     for book in books:
         if "img_src" in book:
-            book["img_src"] = book["img_src"].replace("\\", "/")
+            book["img_src"] = "../" + book["img_src"].replace("\\", "/")
+        if "book_path" in book:
+            book["book_path"] = "../" + book["book_path"].replace("\\", "/")
 
     books_sorted = books
 
     books_per_page = 10
+
+    total_pages = math.ceil(len(books_sorted) / books_per_page)
     book_pages = list(chunked(books_sorted, books_per_page))
 
     os.makedirs("pages", exist_ok=True)
@@ -33,20 +38,14 @@ def render_website():
 
         rendered_page = template.render(
             books_chunks=books_chunks,
-            curernt_page=page_num,
-            total_pages=len(book_pages),
+            current_page=page_num,
+            total_pages=total_pages,
         )
 
         file_path = f"pages/index{page_num}.html"
 
-        with open(file_path, "w", encoding="utf8") as file:
+        with open(file_path, "w", encoding="utf-8") as file:
             file.write(rendered_page)
-
-    with open("pages/index1.html", "r", encoding="utf8") as first_page:
-        first_page_content = first_page.read()
-
-    with open("index.html", "w", encoding="utf8") as root_index:
-        root_index.write(first_page_content)
 
 
 if __name__ == "__main__":
