@@ -23,13 +23,30 @@ def render_website():
 
     books_sorted = sorted(books, key=lambda x: x["title"])
 
-    # Разбиваем книги на группы по 2 книги в каждой
-    books_chunks = list(chunked(books_sorted, 2))
+    books_per_page = 10
+    book_pages = list(chunked(books_sorted, books_per_page))
 
-    rendered_page = template.render(books_chunks=books_chunks)
+    os.makedirs("pages", exist_ok=True)
 
-    with open("index.html", "w", encoding="utf8") as file:
-        file.write(rendered_page)
+    for page_num, books_on_page in enumerate(book_pages, 1):
+        books_chunks = list(chunked(books_on_page, 2))
+
+        rendered_page = template.render(
+            books_chunks=books_chunks,
+            curernt_page=page_num,
+            total_pages=len(book_pages),
+        )
+
+        file_path = f"pages/index{page_num}.html"
+
+        with open(file_path, "w", encoding="utf8") as file:
+            file.write(rendered_page)
+
+    with open("pages/index1.html", "r", encoding="utf8") as first_page:
+        first_page_content = first_page.read()
+
+    with open("index.html", "w", encoding="utf8") as root_index:
+        root_index.write(first_page_content)
 
 
 if __name__ == "__main__":
