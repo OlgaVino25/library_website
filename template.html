@@ -17,20 +17,32 @@
 <body>
   <nav aria-label="Page navigation example">
     <ul class="pagination">
-      <li class="page-item">
-        <a class="page-link" href="#" aria-label="Previous">
-          <span aria-hidden="true">Previous</span>
+      <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+        {% if current_page == 1 %}
+        <span class="page-link" role="button" aria-label="Previous" aria-disabled="true">
+          <span aria-hidden="true">Назад</span>
+        </span>
+        {% else %}
+        <a class="page-link" href="index{{ current_page - 1 }}.html" aria-label="Previous">
+          <span aria-hidden="true">Назад</span>
         </a>
+        {% endif %}
       </li>
       {% for page_num in range(1, total_pages + 1) %}
       <li class="page-item {% if page_num == current_page %}active{% endif %}">
         <a class="page-link" href="index{{ page_num }}.html">{{ page_num }}</a>
       </li>
       {% endfor %}
-      <li class="page-item">
-        <a class="page-link" href="#" aria-label="Next">
-          <span aria-hidden="true">Next</span>
+      <li class="page-item {% if current_page == total_pages %}disabled{% endif %}">
+        {% if current_page == total_pages %}
+        <span class="page-link" role="button" aria-label="Next" aria-disabled="true">
+          <span aria-hidden="true">Вперёд</span>
+        </span>
+        {% else %}
+        <a class="page-link" href="index{{ current_page + 1 }}.html" aria-label="Next">
+          <span aria-hidden="true">Вперёд</span>
         </a>
+        {% endif %}
       </li>
     </ul>
   </nav>
