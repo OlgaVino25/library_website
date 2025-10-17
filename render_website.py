@@ -21,7 +21,7 @@ def render_website():
         if "img_src" in book:
             book["img_src"] = book["img_src"].replace("\\", "/")
 
-    books_sorted = sorted(books, key=lambda x: x["title"])
+    books_sorted = books
 
     books_per_page = 10
     book_pages = list(chunked(books_sorted, books_per_page))
