@@ -1,6 +1,7 @@
 import json
 import os
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+from more_itertools import chunked
 
 
 def render_website():
@@ -19,7 +20,9 @@ def render_website():
     for book in books:
         book["img_src"] = book["img_src"].replace("\\", "/")
 
-    rendered_page = template.render(books=books)
+    books_chunks = list(chunked(books, 2))
+
+    rendered_page = template.render(books_chunks=books_chunks)
 
     with open("index.html", "w", encoding="utf8") as file:
         file.write(rendered_page)
