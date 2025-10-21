@@ -20,12 +20,24 @@ def render_website():
     for book in books:
         book["img_src"] = book["img_src"].replace("\\", "/")
 
-    books_chunks = list(chunked(books, 2))
+    books_per_page = 10
+    book_pages = list(chunked(books, books_per_page))
 
-    rendered_page = template.render(books_chunks=books_chunks)
+    os.makedirs("pages", exist_ok=True)
 
-    with open("index.html", "w", encoding="utf8") as file:
-        file.write(rendered_page)
+    for page_num, books_on_page in enumerate(book_pages, 1):
+        books_chunks = list(chunked(books_on_page, 2))
+
+        rendered_page = template.render(
+            books_chunks=books_chunks,
+            current_page=page_num,
+            total_pages=len(book_pages),
+        )
+
+        file_path = f"pages/index{page_num}.html"
+
+        with open(file_path, "w", encoding="utf8") as file:
+            file.write(rendered_page)
 
 
 if __name__ == "__main__":
