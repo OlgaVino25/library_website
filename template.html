@@ -14,34 +14,36 @@
 </head>
 
 <body>
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
-            {% if current_page > 1 %}
-            <li class="page-item">
-                <a class="page-link" href="index{{ current_page-1 }}.html">Назад</a>
-            </li>
-            {% else %}
-            <li class="page-item disabled">
-                <a class="page-link" href="#">Назад</a>
-            </li>
-            {% endif %}
-
-            {% for page in range(1, total_pages+1) %}
-            <li class="page-item {% if page == current_page %}active{% endif %}">
-                <a class="page-link" href="index{{ page }}.html">{{ page }}</a>
-            </li>
-            {% endfor %}
-
-            {% if current_page < total_pages %} <li class="page-item">
-                <a class="page-link" href="index{{ current_page+1 }}.html">Вперёд</a>
+    <div class="container mt-4">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                {% if current_page > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="index{{ current_page-1 }}.html">Назад</a>
                 </li>
                 {% else %}
                 <li class="page-item disabled">
-                    <a class="page-link" href="#">Вперёд</a>
+                    <a class="page-link" href="#">Назад</a>
                 </li>
                 {% endif %}
-        </ul>
-    </nav>
+
+                {% for page in range(1, total_pages+1) %}
+                <li class="page-item {% if page == current_page %}active{% endif %}">
+                    <a class="page-link" href="index{{ page }}.html">{{ page }}</a>
+                </li>
+                {% endfor %}
+
+                {% if current_page < total_pages %} <li class="page-item">
+                    <a class="page-link" href="index{{ current_page+1 }}.html">Вперёд</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">Вперёд</a>
+                    </li>
+                    {% endif %}
+            </ul>
+        </nav>
+    </div>
     <div class="container">
         <div class="row">
             {% for book_pair in books_chunks %}
@@ -54,10 +56,18 @@
                         </div>
                         <div class="col-md-8">
                             <div class="card-body">
-                                <h5 class="card-title">{{ book.title }}</h5>
+                                <h3 class="card-title">{{ book.title }}</h3>
                                 <p class="card-text">{{ book.author }}</p>
-                                <p class="card-text"><small>{{ book.genres }}</small></p>
-                                <p><a href="../{{ book.book_path | urlencode }}" target="_blank">Читать</a></p>
+                                <p class="card-text">
+                                    {% for genre in book.genres.split(',') %}
+                                    {% set genre_clean = genre.strip().rstrip('.') %}
+                                    {% if genre_clean %}
+                                    <span class="badge badge-secondary">{{ genre_clean }}</span>
+                                    {% endif %}
+                                    {% endfor %}
+                                </p>
+                                <p><a href="../{{ book.book_path | urlencode }}" class="badge badge-primary"
+                                        target="_blank">Читать</a></p>
                                 <p class="card-text">
                                     <small class="text-muted">Комментариев: {{ book.comments|length }}</small>
                                 </p>
