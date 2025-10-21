@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{{ title }} - {{ author }}</title>
+    <link rel="stylesheet" href="../static/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/book_style.css">
+</head>
+
+<body>
+    <div class="container mt-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="../pages/index1.html">Библиотека</a></li>
+                <li class="breadcrumb-item active">{{ title }}</li>
+            </ol>
+        </nav>
+
+        <div class="book-text">
+            {{ book_content }}
+        </div>
+
+        <div class="mt-4 mb-4">
+            <a href="../pages/index1.html" class="btn btn-primary">← Назад к каталогу</a>
+        </div>
+    </div>
+</body>
+
+</html>
