@@ -45,6 +45,7 @@
 
 ## Структура проекта
 
+<img width="575" height="336" alt="Снимок экрана 2025-10-21 141338" src="https://github.com/user-attachments/assets/d5088e2a-2b45-4c48-a02f-6bac4e280264" />
 
 
 ## Запуск
