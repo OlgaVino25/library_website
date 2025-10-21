@@ -5,6 +5,9 @@
 ## Демо
 [Библиотека онлайн](https://olgavino25.github.io/library_website/)
 
+<img width="400" height="300" alt="Снимок экрана 2025-10-21 123943" src="https://github.com/user-attachments/assets/2b332ff7-1504-46a2-aed3-ef9fc72e072c" />
+
+
 ## Функциональность
 
 - **Каталог книг** с обложками и описанием
