@@ -2,7 +2,8 @@
 
 Проект веб-сайта для онлайн-библиотеки с каталогом книг.
 
-## [Библиотека онлайн](https://olgavino25.github.io/library_website/)
+## Демо
+[Библиотека онлайн](https://olgavino25.github.io/library_website/)
 
 ## Функциональность
 
@@ -20,8 +21,7 @@
 
 ## Структура проекта
 
-
-
+<img width="401" height="374" alt="Снимок экрана 2025-10-21 125437" src="https://github.com/user-attachments/assets/be86ffb1-2060-426c-8c76-9fd2970d48a0" />
 
 ## Запуск
 
@@ -29,9 +29,12 @@
 
 1. Клонируйте репозиторий.
 
-2. Установите зависимости командой `pip install -r requirements.txt`
+2. Установите зависимости командой
+```bash
+pip install -r requirements.txt
+```
 
-3. Запустите сервер разработки:
+4. Запустите сервер разработки:
 ```bash
 python serve.py
 ```
