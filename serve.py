@@ -1,5 +1,4 @@
 import os
-import argparse
 from livereload import Server
 from render_website import render_website, get_config
 
