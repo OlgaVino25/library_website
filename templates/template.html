@@ -68,11 +68,8 @@
                                     {% endif %}
                                     {% endfor %}
                                 </p>
-                                <p><a href="../{{ book.book_path | urlencode }}" class="badge badge-primary"
+                                <p><a href="../{{ book.book_path | urlencode }}" class="btn btn-primary"
                                         target="_blank">Читать</a></p>
-                                <p class="card-text">
-                                    <small class="text-muted">Комментариев: {{ book.comments|length }}</small>
-                                </p>
                             </div>
                         </div>
                     </div>
