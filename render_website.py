@@ -12,7 +12,7 @@ DEFAULT_META_DATA_PATH = "src/meta_data.json"
 DEFAULT_TEMPLATES_DIR = "templates"
 DEFAULT_STATIC_DIR = "static"
 DEFAULT_SRC_DIR = "src"
-DEFAULT_OUTPUT_DIR = "docs"
+DEFAULT_OUTPUT_DIR = "site"
 
 
 def sanitize_filename(filename):
@@ -25,6 +25,7 @@ def get_config():
     """Получает конфигурацию из аргументов командной строки и переменных окружения"""
     parser = argparse.ArgumentParser(description="Генератор сайта библиотеки")
 
+    # Аргументы командной строки
     parser.add_argument(
         "--data-path",
         default=os.getenv("LIBRARY_DATA_PATH", DEFAULT_META_DATA_PATH),
@@ -59,21 +60,22 @@ def render_website(config):
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
     # Создаем папку для вывода если её нет
-    docs_dir = os.path.join(script_dir, config.output_dir)
+    site_dir = os.path.join(script_dir, config.output_dir)
 
-    if os.path.exists(docs_dir):
-        shutil.rmtree(docs_dir)
-    os.makedirs(docs_dir)
+    # Удаляем старую папку site и создаем заново
+    if os.path.exists(site_dir):
+        shutil.rmtree(site_dir)
+    os.makedirs(site_dir)
 
     # Копируем статические файлы
     static_src = os.path.join(script_dir, config.static_dir)
-    static_dest = os.path.join(docs_dir, "static")
+    static_dest = os.path.join(site_dir, "static")
     if os.path.exists(static_src):
         shutil.copytree(static_src, static_dest)
 
     # Копируем медиафайлы
     src_dir = os.path.join(script_dir, config.src_dir)
-    media_dest = os.path.join(docs_dir, "media")
+    media_dest = os.path.join(site_dir, "media")
     if os.path.exists(src_dir):
         shutil.copytree(src_dir, media_dest)
 
@@ -115,16 +117,16 @@ def render_website(config):
         if not book["book_path"].startswith("media/"):
             book["book_path"] = "media/" + book["book_path"]
 
-    # Создаем папки в docs
-    os.makedirs(os.path.join(docs_dir, "book_pages"), exist_ok=True)
-    os.makedirs(os.path.join(docs_dir, "pages"), exist_ok=True)
+    # Создаем папки в site
+    os.makedirs(os.path.join(site_dir, "book_pages"), exist_ok=True)
+    os.makedirs(os.path.join(site_dir, "pages"), exist_ok=True)
 
     # Генерируем HTML страницы для книг
     for book in books:
         book_path = book["book_path"]
         try:
             # Читаем исходный текст книги
-            book_file_path = os.path.join(docs_dir, book_path)
+            book_file_path = os.path.join(site_dir, book_path)
             with open(book_file_path, "r", encoding="utf-8") as f:
                 book_content = f.read()
 
@@ -134,8 +136,8 @@ def render_website(config):
                 title=book["title"], author=book["author"], book_content=book_content
             )
 
-            # Сохраняем книгу как HTML в docs/book_pages
-            book_html_path = os.path.join(docs_dir, "book_pages", f"{safe_title}.html")
+            # Сохраняем книгу как HTML в site/book_pages
+            book_html_path = os.path.join(site_dir, "book_pages", f"{safe_title}.html")
             with open(book_html_path, "w", encoding="utf8") as f:
                 f.write(rendered_book)
 
@@ -146,8 +148,8 @@ def render_website(config):
             print(f"Ошибка при обработке книги {book['title']}: {e}")
             continue
 
-    # Сохраняем обновленный meta_data.json в docs
-    meta_data_dest = os.path.join(docs_dir, "meta_data.json")
+    # Сохраняем обновленный meta_data.json в site
+    meta_data_dest = os.path.join(site_dir, "meta_data.json")
     with open(meta_data_dest, "w", encoding="utf8") as f:
         json.dump(books, f, ensure_ascii=False, indent=4)
 
@@ -165,16 +167,16 @@ def render_website(config):
             total_pages=total_pages,
         )
 
-        file_path = os.path.join(docs_dir, "pages", f"index{page_num}.html")
+        file_path = os.path.join(site_dir, "pages", f"index{page_num}.html")
         with open(file_path, "w", encoding="utf8") as file:
             file.write(rendered_page)
 
     # Создаем главный index.html с редиректом
-    index_path = os.path.join(docs_dir, "index.html")
+    index_path = os.path.join(site_dir, "index.html")
     with open(index_path, "w", encoding="utf8") as file:
         file.write('<meta http-equiv="refresh" content="0; url=pages/index1.html">')
 
-    print(f"Сайт успешно сгенерирован в папке: {docs_dir}")
+    print(f"Сайт успешно сгенерирован в папке: {site_dir}")
 
 
 if __name__ == "__main__":
