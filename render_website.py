@@ -172,9 +172,11 @@ def render_website(config):
             file.write(rendered_page)
 
     # Создаем главный index.html с редиректом
-    index_path = os.path.join(site_dir, "index.html")
+    index_path = os.path.join(script_dir, "index.html")
     with open(index_path, "w", encoding="utf8") as file:
-        file.write('<meta http-equiv="refresh" content="0; url=pages/index1.html">')
+        file.write(
+            '<meta http-equiv="refresh" content="0; url=site/pages/index1.html">'
+        )
 
     print(f"Сайт успешно сгенерирован в папке: {site_dir}")
 

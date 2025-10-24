@@ -9,7 +9,8 @@ def main():
     render_website(config)
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    site_dir = os.path.join(script_dir, config.output_dir)
+
+    root_dir = script_dir
 
     server = Server()
 
@@ -17,7 +18,7 @@ def main():
     server.watch(config.data_path, lambda: render_website(config))
     server.watch(f"{config.src_dir}/books/*.txt", lambda: render_website(config))
 
-    server.serve(root=site_dir, port=5500, host="127.0.0.1")
+    server.serve(root=root_dir, port=5500, host="127.0.0.1")
 
 
 if __name__ == "__main__":
