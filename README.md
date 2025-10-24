@@ -53,18 +53,18 @@
 
 ## Структура проекта
 
-
+<img width="471" height="342" alt="Снимок экрана 2025-10-24 140307" src="https://github.com/user-attachments/assets/1032c47b-5bbf-47cb-bd2a-db0aabeac45f" />
 
 ## Настройка путей
 
 Программа поддерживает гибкую настройку путей через:
 
-### Аргументы командной строки:
+#### Аргументы командной строки:
 ```bash
 python render_website.py --data-path /путь/к/данным.json --output-dir /путь/для/сайта
 ```
 
-## Переменные окружения:
+#### Переменные окружения:
 
 ```bash
 # Linux/Mac
@@ -76,7 +76,7 @@ set LIBRARY_DATA_PATH=C:\путь\к\данным.json
 set LIBRARY_OUTPUT_DIR=C:\путь\для\сайта
 ```
 
-## Доступные настройки:
+#### Доступные настройки:
 
 - `--data-path` - путь к файлу meta_data.json
 - `--templates-dir` - папка с шаблонами
@@ -93,13 +93,13 @@ set LIBRARY_OUTPUT_DIR=C:\путь\для\сайта
 
 2. Установите зависимости командой:
 
-```bash
+```python
 pip install -r requirements.txt
 ```
 
 3. Запустите сервер разработки:
 
-```bash
+```python
 python serve.py
 
 # Откройте http://127.0.0.1:5500
@@ -107,7 +107,7 @@ python serve.py
 
 4. Генерация статических страниц:
 
-```bash
+```python
 python render_website.py
 ```
 
