@@ -1,0 +1,19 @@
+.book-text {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: pre-wrap;
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
+    padding: 20px;
+    background: white;
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .book-text {
+        padding: 10px;
+        font-size: 14px;
+    }
+}
