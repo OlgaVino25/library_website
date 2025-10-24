@@ -3,8 +3,16 @@ import os
 import math
 import re
 import shutil
+import argparse
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from more_itertools import chunked
+
+# Константы с путями по умолчанию
+DEFAULT_META_DATA_PATH = "src/meta_data.json"
+DEFAULT_TEMPLATES_DIR = "templates"
+DEFAULT_STATIC_DIR = "static"
+DEFAULT_SRC_DIR = "src"
+DEFAULT_OUTPUT_DIR = "site"
 
 
 def sanitize_filename(filename):
@@ -13,32 +21,66 @@ def sanitize_filename(filename):
     return re.sub(invalid_chars, " ", filename)
 
 
-def render_website():
+def get_config():
+    """Получает конфигурацию из аргументов командной строки и переменных окружения"""
+    parser = argparse.ArgumentParser(description="Генератор сайта библиотеки")
+
+    # Аргументы командной строки
+    parser.add_argument(
+        "--data-path",
+        default=os.getenv("LIBRARY_DATA_PATH", DEFAULT_META_DATA_PATH),
+        help=f"Путь к файлу meta_data.json (по умолчанию: {DEFAULT_META_DATA_PATH})",
+    )
+    parser.add_argument(
+        "--templates-dir",
+        default=os.getenv("LIBRARY_TEMPLATES_DIR", DEFAULT_TEMPLATES_DIR),
+        help=f"Папка с шаблонами (по умолчанию: {DEFAULT_TEMPLATES_DIR})",
+    )
+    parser.add_argument(
+        "--static-dir",
+        default=os.getenv("LIBRARY_STATIC_DIR", DEFAULT_STATIC_DIR),
+        help=f"Папка со статическими файлами (по умолчанию: {DEFAULT_STATIC_DIR})",
+    )
+    parser.add_argument(
+        "--src-dir",
+        default=os.getenv("LIBRARY_SRC_DIR", DEFAULT_SRC_DIR),
+        help=f"Папка с исходными файлами (по умолчанию: {DEFAULT_SRC_DIR})",
+    )
+    parser.add_argument(
+        "--output-dir",
+        default=os.getenv("LIBRARY_OUTPUT_DIR", DEFAULT_OUTPUT_DIR),
+        help=f"Папка для сгенерированного сайта (по умолчанию: {DEFAULT_OUTPUT_DIR})",
+    )
+
+    return parser.parse_args()
+
+
+def render_website(config):
     # Получаем абсолютный путь к директории скрипта
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # Создаем папку site если её нет
-    site_dir = os.path.join(script_dir, "site")
+    # Создаем папку для вывода если её нет
+    site_dir = os.path.join(script_dir, config.output_dir)
 
     # Удаляем старую папку site и создаем заново
     if os.path.exists(site_dir):
         shutil.rmtree(site_dir)
     os.makedirs(site_dir)
 
-    # Копируем статические файлы в site/static
-    static_src = os.path.join(script_dir, "static")
+    # Копируем статические файлы
+    static_src = os.path.join(script_dir, config.static_dir)
     static_dest = os.path.join(site_dir, "static")
     if os.path.exists(static_src):
         shutil.copytree(static_src, static_dest)
 
-    # Копируем медиафайлы в site/media
-    src_dir = os.path.join(script_dir, "src")
+    # Копируем медиафайлы
+    src_dir = os.path.join(script_dir, config.src_dir)
     media_dest = os.path.join(site_dir, "media")
     if os.path.exists(src_dir):
         shutil.copytree(src_dir, media_dest)
 
-    # Загружаем шаблоны из папки templates
-    templates_dir = os.path.join(script_dir, "templates")
+    # Загружаем шаблоны
+    templates_dir = os.path.join(script_dir, config.templates_dir)
     env = Environment(
         loader=FileSystemLoader(templates_dir),
         autoescape=select_autoescape(["html", "xml"]),
@@ -47,19 +89,30 @@ def render_website():
     template = env.get_template("template.html")
     book_template = env.get_template("book_template.html")
 
-    # Загружаем meta_data.json из src
-    meta_data_path = os.path.join(script_dir, "src", "meta_data.json")
-    with open(meta_data_path, "r", encoding="utf-8") as my_file:
-        books = json.load(my_file)
+    # Загружаем meta_data.json
+    if os.path.isabs(config.data_path):
+        meta_data_path = config.data_path
+    else:
+        meta_data_path = os.path.join(script_dir, config.data_path)
+
+    print(f"Загрузка данных из: {meta_data_path}")
+
+    try:
+        with open(meta_data_path, "r", encoding="utf-8") as my_file:
+            books = json.load(my_file)
+    except FileNotFoundError:
+        print(f"Ошибка: Файл {meta_data_path} не найден!")
+        print(
+            "Укажите правильный путь через --data-path или переменную окружения LIBRARY_DATA_PATH"
+        )
+        return
 
     # Обновляем пути в метаданных
     for book in books:
-        # Исправляем пути к изображениям
         book["img_src"] = book["img_src"].replace("\\", "/")
         if not book["img_src"].startswith("media/"):
             book["img_src"] = "media/" + book["img_src"]
 
-        # Исправляем пути к книгам
         book["book_path"] = book["book_path"].replace("\\", "/")
         if not book["book_path"].startswith("media/"):
             book["book_path"] = "media/" + book["book_path"]
@@ -123,6 +176,9 @@ def render_website():
     with open(index_path, "w", encoding="utf8") as file:
         file.write('<meta http-equiv="refresh" content="0; url=pages/index1.html">')
 
+    print(f"Сайт успешно сгенерирован в папке: {site_dir}")
+
 
 if __name__ == "__main__":
-    render_website()
+    config = get_config()
+    render_website(config)

@@ -1,15 +1,24 @@
 import os
+import argparse
 from livereload import Server
-from render_website import render_website
+from render_website import render_website, get_config
 
-render_website()
 
-# Получаем абсолютный путь к директории site
-script_dir = os.path.dirname(os.path.abspath(__file__))
-site_dir = os.path.join(script_dir, "site")
+def main():
+    config = get_config()
+    render_website(config)
 
-server = Server()
-server.watch("templates/*.html", render_website)
-server.watch("src/meta_data.json", render_website)
-server.watch("src/books/*.txt", render_website)
-server.serve(root=site_dir, port=5500, host="127.0.0.1")
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    site_dir = os.path.join(script_dir, config.output_dir)
+
+    server = Server()
+
+    server.watch(f"{config.templates_dir}/*.html", lambda: render_website(config))
+    server.watch(config.data_path, lambda: render_website(config))
+    server.watch(f"{config.src_dir}/books/*.txt", lambda: render_website(config))
+
+    server.serve(root=site_dir, port=5500, host="127.0.0.1")
+
+
+if __name__ == "__main__":
+    main()
