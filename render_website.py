@@ -8,18 +8,16 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from more_itertools import chunked
 
 # Константы с путями по умолчанию
-DEFAULT_META_DATA_PATH = "src/meta_data.json"
+DEFAULT_META_DATA_PATH = "meta_data.json"
 DEFAULT_TEMPLATES_DIR = "templates"
 DEFAULT_STATIC_DIR = "static"
-DEFAULT_SRC_DIR = "src"
-DEFAULT_OUTPUT_DIR = "site"
-
+DEFAULT_SRC_DIR = "media"
+DEFAULT_OUTPUT_DIR = "pages"
 
 def sanitize_filename(filename):
     """Очищает имя файла от недопустимых символов"""
     invalid_chars = r'[<>:"/\\|?*]'
     return re.sub(invalid_chars, " ", filename)
-
 
 def get_config():
     """Получает конфигурацию из аргументов командной строки и переменных окружения"""
@@ -54,30 +52,20 @@ def get_config():
 
     return parser.parse_args()
 
-
 def render_website(config):
     # Получаем абсолютный путь к директории скрипта
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # Создаем папку для вывода если её нет
-    site_dir = os.path.join(script_dir, config.output_dir)
+    # Папка для вывода - pages в корне
+    pages_dir = os.path.join(script_dir, config.output_dir)
+    book_pages_dir = os.path.join(pages_dir, "book_pages")
 
-    # Удаляем старую папку site и создаем заново
-    if os.path.exists(site_dir):
-        shutil.rmtree(site_dir)
-    os.makedirs(site_dir)
-
-    # Копируем статические файлы
-    static_src = os.path.join(script_dir, config.static_dir)
-    static_dest = os.path.join(site_dir, "static")
-    if os.path.exists(static_src):
-        shutil.copytree(static_src, static_dest)
-
-    # Копируем медиафайлы
-    src_dir = os.path.join(script_dir, config.src_dir)
-    media_dest = os.path.join(site_dir, "media")
-    if os.path.exists(src_dir):
-        shutil.copytree(src_dir, media_dest)
+    # Удаляем старые папки и создаем заново
+    if os.path.exists(pages_dir):
+        shutil.rmtree(pages_dir)
+    
+    os.makedirs(pages_dir)
+    os.makedirs(book_pages_dir)
 
     # Загружаем шаблоны
     templates_dir = os.path.join(script_dir, config.templates_dir)
@@ -107,37 +95,25 @@ def render_website(config):
         )
         return
 
-    # Обновляем пути в метаданных
-    for book in books:
-        book["img_src"] = book["img_src"].replace("\\", "/")
-        if not book["img_src"].startswith("media/"):
-            book["img_src"] = "media/" + book["img_src"]
-
-        book["book_path"] = book["book_path"].replace("\\", "/")
-        if not book["book_path"].startswith("media/"):
-            book["book_path"] = "media/" + book["book_path"]
-
-    # Создаем папки в site
-    os.makedirs(os.path.join(site_dir, "book_pages"), exist_ok=True)
-    os.makedirs(os.path.join(site_dir, "pages"), exist_ok=True)
-
     # Генерируем HTML страницы для книг
     for book in books:
         book_path = book["book_path"]
         try:
             # Читаем исходный текст книги
-            book_file_path = os.path.join(site_dir, book_path)
+            book_file_path = os.path.join(script_dir, config.src_dir, book_path)
             with open(book_file_path, "r", encoding="utf-8") as f:
                 book_content = f.read()
 
             safe_title = sanitize_filename(book["title"])
 
             rendered_book = book_template.render(
-                title=book["title"], author=book["author"], book_content=book_content
+                title=book["title"], 
+                author=book["author"], 
+                book_content=book_content
             )
 
-            # Сохраняем книгу как HTML в site/book_pages
-            book_html_path = os.path.join(site_dir, "book_pages", f"{safe_title}.html")
+            # Сохраняем книгу как HTML в pages/book_pages
+            book_html_path = os.path.join(book_pages_dir, f"{safe_title}.html")
             with open(book_html_path, "w", encoding="utf8") as f:
                 f.write(rendered_book)
 
@@ -148,8 +124,8 @@ def render_website(config):
             print(f"Ошибка при обработке книги {book['title']}: {e}")
             continue
 
-    # Сохраняем обновленный meta_data.json в site
-    meta_data_dest = os.path.join(site_dir, "meta_data.json")
+    # Сохраняем обновленный meta_data.json в pages
+    meta_data_dest = os.path.join(pages_dir, "meta_data.json")
     with open(meta_data_dest, "w", encoding="utf8") as f:
         json.dump(books, f, ensure_ascii=False, indent=4)
 
@@ -167,19 +143,16 @@ def render_website(config):
             total_pages=total_pages,
         )
 
-        file_path = os.path.join(site_dir, "pages", f"index{page_num}.html")
+        file_path = os.path.join(pages_dir, f"index{page_num}.html")
         with open(file_path, "w", encoding="utf8") as file:
             file.write(rendered_page)
 
     # Создаем главный index.html с редиректом
     index_path = os.path.join(script_dir, "index.html")
     with open(index_path, "w", encoding="utf8") as file:
-        file.write(
-            '<meta http-equiv="refresh" content="0; url=site/pages/index1.html">'
-        )
+        file.write('<meta http-equiv="refresh" content="0; url=pages/index1.html">')
 
-    print(f"Сайт успешно сгенерирован в папке: {site_dir}")
-
+    print(f"Сайт успешно сгенерирован в папке: {pages_dir}")
 
 if __name__ == "__main__":
     config = get_config()

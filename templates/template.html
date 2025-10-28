@@ -3,17 +3,10 @@
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
     <link rel="icon" href="../static/favicon.ico" type="image/x-icon" />
-    <link
-      rel="shortcut icon"
-      href="../static/favicon.ico"
-      type="image/x-icon"
-    />
+    <link rel="shortcut icon" href="../static/favicon.ico" type="image/x-icon" />
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="../static/bootstrap.min.css" />
@@ -39,9 +32,7 @@
           </li>
           {% endfor %} {% if current_page < total_pages %}
           <li class="page-item">
-            <a class="page-link" href="index{{ current_page+1 }}.html"
-              >Вперёд</a
-            >
+            <a class="page-link" href="index{{ current_page+1 }}.html">Вперёд</a>
           </li>
           {% else %}
           <li class="page-item disabled">
@@ -58,29 +49,22 @@
           <div class="card mb-3">
             <div class="row no-gutters">
               <div class="col-md-4">
-                <img
-                  src="../{{ book.img_src | urlencode }}"
-                  class="card-img"
-                  alt="{{ book.title }}"
-                />
+                <img src="../media/{{ book.img_src | urlencode }}" class="card-img" alt="{{ book.title }}" />
               </div>
               <div class="col-md-8">
                 <div class="card-body">
                   <h3 class="card-title">{{ book.title }}</h3>
                   <p class="card-text">{{ book.author }}</p>
                   <p class="card-text">
-                    {% for genre in book.genres.split(',') %} {% set genre_clean
-                    = genre.strip().rstrip('.') %} {% if genre_clean %}
+                    {% for genre in book.genres.split(',') %} {% set genre_clean = genre.strip().rstrip('.') %} {% if
+                    genre_clean %}
                     <span class="badge badge-secondary">{{ genre_clean }}</span>
                     {% endif %} {% endfor %}
                   </p>
                   <p>
-                    <a
-                      href="../{{ book.book_path | urlencode }}"
-                      class="btn btn-primary"
-                      target="_blank"
-                      >Читать</a
-                    >
+                    <a href="../pages/{{ book.book_path | urlencode }}" class="btn btn-primary" target="_blank">
+                      <b>Читать</b>
+                    </a>
                   </p>
                 </div>
               </div>

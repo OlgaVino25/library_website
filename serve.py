@@ -2,7 +2,6 @@ import os
 from livereload import Server
 from render_website import render_website, get_config
 
-
 def main():
     config = get_config()
     render_website(config)
@@ -18,7 +17,6 @@ def main():
     server.watch(f"{config.src_dir}/books/*.txt", lambda: render_website(config))
 
     server.serve(root=root_dir, port=5500, host="127.0.0.1")
-
 
 if __name__ == "__main__":
     main()
