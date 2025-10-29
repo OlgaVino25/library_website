@@ -83,16 +83,10 @@ def render_website(config):
     else:
         meta_data_path = os.path.join(script_dir, config.data_path)
 
-    print(f"Загрузка данных из: {meta_data_path}")
-
     try:
         with open(meta_data_path, "r", encoding="utf-8") as my_file:
             books = json.load(my_file)
     except FileNotFoundError:
-        print(f"Ошибка: Файл {meta_data_path} не найден!")
-        print(
-            "Укажите правильный путь через --data-path или переменную окружения LIBRARY_DATA_PATH"
-        )
         return
 
     # Генерируем HTML страницы для книг
@@ -121,7 +115,6 @@ def render_website(config):
             book["book_path"] = f"book_pages/{safe_title}.html"
 
         except Exception as e:
-            print(f"Ошибка при обработке книги {book['title']}: {e}")
             continue
 
     # Сохраняем обновленный meta_data.json в pages
@@ -152,7 +145,6 @@ def render_website(config):
     with open(index_path, "w", encoding="utf8") as file:
         file.write('<meta http-equiv="refresh" content="0; url=pages/index1.html">')
 
-    print(f"Сайт успешно сгенерирован в папке: {pages_dir}")
 
 if __name__ == "__main__":
     config = get_config()
